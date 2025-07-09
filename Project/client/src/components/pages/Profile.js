@@ -73,7 +73,7 @@ const Profile = () => {
       const addedActivity = await res.json();
       setProfileData((prev) => ({
         ...prev,
-        activities: [addedActivity, ...prev.activities], // add new activity at top
+        activities: [addedActivity, ...prev.activities], 
       }));
       setNewActivityComment("");
     } catch (err) {

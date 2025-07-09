@@ -1,53 +1,48 @@
-/* profile.css */
 
-/* General body */
 body {
-    background-color: #fff0f6; /* soft pink background */
+    background-color: #fff0f6; 
     font-family: 'Poppins', sans-serif;
-    color: #3e1f47; /* dark purple */
+    color: #3e1f47; 
     margin: 0;
     padding: 0;
   }
   
-  /* Navbar */
   .custom-navbar {
-    background-color: #fce4ec; /* soft pink */
-    box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3); /* subtle purple shadow */
+    background-color: #fce4ec; 
+    box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3);
     padding: 0.5rem 1rem;
   }
   
   .custom-navbar .navbar-brand,
   .custom-navbar .nav-link {
-    color: #9c27b0; /* bright purple */
+    color: #9c27b0; 
     font-weight: 600;
     font-size: 1.2rem;
   }
   
   .custom-navbar .nav-link:hover {
-    color: #f48fb1; /* lighter pink on hover */
+    color: #f48fb1; 
   }
   
-  /* Profile container */
+
   .profile-container {
     max-width: 700px;
     margin: 40px auto 60px;
     padding: 25px 30px;
-    background: #fff0f6; /* soft pink background */
+    background: #fff0f6; 
     border-radius: 18px;
     box-shadow: 0 12px 30px rgba(255, 192, 203, 0.3);
     text-align: center;
   }
   
-  /* Heading */
   .profile-container h2 {
     font-weight: 700;
     font-size: 2.4rem;
     margin-bottom: 15px;
-    color: #9c27b0; /* bright purple */
+    color: #9c27b0; 
     text-shadow: 1px 1px 3px #f4a1c4;
   }
   
-  /* Profile info */
   .profile-info {
     display: flex;
     justify-content: center;
@@ -70,7 +65,6 @@ body {
     cursor: default;
   }
   
-  /* Section Titles */
   .section-title {
     color: #9c27b0;
     font-weight: 700;
@@ -81,7 +75,6 @@ body {
     margin-left: 10px;
   }
   
-  /* Posts & Activities lists */
   .post-list,
   .activity-list {
     list-style-type: none;
@@ -125,23 +118,22 @@ body {
     transition: background-color 0.2s ease;
   }
   
-  /* Form container for Login/Register */
   .form-container {
     max-width: 400px;
     margin: 50px auto 60px;
     padding: 25px 30px;
-    background: #fff0f6; /* soft pink background */
+    background: #fff0f6; 
     border-radius: 18px;
     box-shadow: 0 12px 30px rgba(255, 192, 203, 0.3);
     font-family: 'Poppins', sans-serif;
-    color: #3e1f47; /* dark purple */
+    color: #3e1f47;
   }
   
   .form-container h2 {
     font-weight: 700;
     font-size: 2rem;
     margin-bottom: 20px;
-    color: #9c27b0; /* bright purple */
+    color: #9c27b0; 
     text-shadow: 1px 1px 3px #f4a1c4;
     text-align: center;
   }
@@ -202,7 +194,6 @@ body {
     color: white;
   }
   
-  /* Responsive */
   @media (max-width: 768px) {
     .profile-container, .form-container {
       max-width: 95%;
