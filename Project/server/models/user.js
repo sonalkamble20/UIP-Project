@@ -1,26 +1,25 @@
-//1. import mongoose
+// 1. import mongoose
 const mongoose = require("mongoose");
 const bcrypt = require('bcryptjs');
 
-//2. create schema for entity
+// 2. create schema for entity
 const userSchema = new mongoose.Schema({
-    username: {type: String, unique: true, required: true},
-    password: {type: String, required: true},
+    username: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
     followers: [String],
     following: [String]
-})
+});
 
-//3. create model of schema
+// 3. create model of schema
 const User = mongoose.model("User", userSchema);
 
-//4. create CRUD functions on model
+// 4. create CRUD functions on model
 
-//create
-
+// create
 async function register(username, password) {
-    const user = await getUser(username);
+    const user = await User.findOne({ username }); // ✅ replaced getUser()
 
-    if(user) throw Error('Username already in use');
+    if (user) throw Error('Username already in use');
 
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
@@ -33,31 +32,40 @@ async function register(username, password) {
     return newUser;
 }
 
-//read
+// read
 async function login(username, password) {
-    const user = await getUser(username);
+    const user = await User.findOne({ username }); // ✅ replaced getUser()
 
-    if(!user) throw Error('User not found');
+    if (!user) throw Error('User not found');
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if(!isMatch) throw Error('Wrong Password');
+    if (!isMatch) throw Error('Wrong Password');
 
     return user;
 }
 
-//update
+// update
 async function updatePassword(id, password) {
-    const user = await User.updateOne({"_id": id}, {$set: {password: password}});
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(password, salt);
+    const user = await User.updateOne({ _id: id }, { $set: { password: hashed } });
     return user;
 }
 
-//delete
+// delete
 async function deleteUser(id) {
-    return await User.findOne({ "username": username});
+    return await User.deleteOne({ _id: id });
 }
 
-//5. eporting functions to routes
+async function getUserProfile(username) {
+    const user = await User.findOne({ username }).select('-password').lean();
+    return user;
+}
 
 module.exports = {
-    register, login, updatePassword, deleteUser
-}
+    register,
+    login,
+    updatePassword,
+    deleteUser,
+    getUserProfile
+};

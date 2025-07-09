@@ -1,43 +1,42 @@
-
 const express = require("express");
-const Post = require('../models/activity');
+const { createComment, readCommentsByUser, updateComment, deleteComment } = require("../models/activity");
 const router = express.Router();
 
 router
-  .post('/activity', async (req, res) => {
+  .post('/createComment', async (req, res) => {
     try {
-      const comment = await Activity.openActivity(req.body.userid, req.body.comment, req.body.postid);
-      res.send({...comment});
-    } catch(error) {
-      res.status(401).send({ message: error.message });
+      const comment = await createComment(req.body.username, req.body.comment, req.body.postid);
+      res.json(comment);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
   })
 
-  .post('/readComment', async (req, res) => {
+  .get('/comments/:username', async (req, res) => {
     try {
-      const comment = await Post.uploadPost(req.body.userid, req.body.postid);
-      res.send({...comment});
-    } catch(error) {
-      res.status(401).send({ message: error.message }); 
+      const comments = await readCommentsByUser(req.params.username);
+      res.json(comments);
+    } catch (error) {
+      res.status(404).json({ message: error.message });
     }
   })
 
   .put('/updateComment', async (req, res) => {
     try {
-      const comment = await Post.updatePost(req.body.postid, req.body.userid, req.body.comment);
-      res.send({...comment});
-    } catch(error) {
-      res.status(401).send({ message: error.message });
+      const comment = await updateComment(req.body.activityId, req.body.comment);
+      res.json(comment);
+    } catch (error) {
+      res.status(404).json({ message: error.message });
     }
   })
 
   .delete('/deleteComment', async (req, res) => {
     try {
-      await Post.deletePost(req.body.comment, req.body.postid);
-      res.send({ success: "Comment deleted" });
-    } catch(error) {
-      res.status(401).send({ message: error.message });
+      await deleteComment(req.body.activityId);
+      res.json({ success: "Comment deleted" });
+    } catch (error) {
+      res.status(404).json({ message: error.message });
     }
-  })
+  });
 
 module.exports = router;

@@ -1,72 +1,48 @@
-//1. import mongoose
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
-//2. create schema for entity
 const postSchema = new mongoose.Schema({
-    userid: {type: String, unique: true, required: true},
-    postid: {type: String, unnique: true, required: true},
-    content: {type: String},
-    likes: {type: Number, required: true},
+    username: { type: String, required: true },
+    postid: { type: String, unique: true, required: true },
+    content: { type: String },
+    likes: { type: Number, required: true, default: 0 },
     comments: [String]
-})
+}, { timestamps: true });
 
-//3. create model of schema
 const Post = mongoose.model("Post", postSchema);
 
-//4. create CRUD functions on model
-
-//create
-
-async function uploadPost(content, userid) {
-    const user = await getUser(userid);
-
-    if(!user) throw Error('user does not exist!');
-
-    const newPost = await Post.create({
-        content: content
-    });
-
-    return newPost;
+async function uploadPost(content, username) {
+  const newPost = await Post.create({
+    username,
+    content,
+    postid: uuidv4(),
+    likes: 0
+  });
+  return newPost;
 }
 
-//read
-async function openPost(postid, userid) {
-    const user = await getUser(userid);
-
-    if(!user) throw Error('user does not exist!');
-
-    const post = await getPost(postid);
-
-    if(!post) throw Error('Post not found');
-
-    return post;
+async function openPost(postid) {
+  const post = await Post.findOne({ postid });
+  if (!post) throw new Error('Post not found');
+  return post;
 }
 
-//update
-async function updatePost(postid, userid) {
-    const user = await getUser(userid);
-
-    if(!user) throw Error('user does not exist!');
-
-    const post = await Post.updateOne({"_id": postid}, {$set: {content: content}});
-    return post;
+async function updatePost(postid, content) {
+  const updated = await Post.findOneAndUpdate({ postid }, { content }, { new: true });
+  if (!updated) throw new Error('Post not found');
+  return updated;
 }
 
-//delete
-async function deletePost(postid, userid) {
-    const user = await getUser(userid);
-
-    if(!user) throw Error('user does not exist!');
-
-    const post = await getPost(postid);
-
-    if(!post) throw Error('post does not exist!');
-
-    return await Post.findOne({ "content": content});
+async function deletePost(postid) {
+  const deleted = await Post.findOneAndDelete({ postid });
+  if (!deleted) throw new Error('Post not found');
+  return deleted;
 }
-
-//5. eporting functions to routes
 
 module.exports = {
-    uploadPost, openPost, updatePost, deletePost
-}
+  Post,
+  uploadPost,
+  openPost,
+  updatePost,
+  deletePost
+};
