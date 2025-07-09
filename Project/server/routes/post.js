@@ -14,9 +14,14 @@ router
 
   .post('/upload', async (req, res) => {
     try {
-      const post = await uploadPost(req.body.content, req.body.username, req.body.postid);
+      const { content, username } = req.body;
+      if (!content || !username) {
+        return res.status(400).json({ message: "Content and username are required" });
+      }
+      const post = await uploadPost(content, username);
       res.json(post);
     } catch (error) {
+      console.error("Error uploading post:", error);
       res.status(400).json({ message: error.message });
     }
   })
@@ -30,13 +35,17 @@ router
     }
   })
 
-  .delete('/delete', async (req, res) => {
+.delete('/delete', async (req, res) => {
     try {
-      await deletePost(req.body.postid);
+      const { postid } = req.body;
+      if (!postid) return res.status(400).json({ message: 'postid required' });
+  
+      await deletePost(postid);
       res.json({ success: "Post deleted" });
     } catch (error) {
       res.status(404).json({ message: error.message });
     }
   });
+  
 
 module.exports = router;

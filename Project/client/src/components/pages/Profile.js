@@ -36,46 +36,87 @@ const Profile = () => {
   const handleAddPost = async (e) => {
     e.preventDefault();
     if (!newPostContent.trim()) return alert("Post content cannot be empty.");
-
+  
     try {
       const res = await fetch("/post/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newPostContent, username}),
+        body: JSON.stringify({ content: newPostContent, username }),
       });
-      if (!res.ok) throw new Error("Failed to add post");
-
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to add post");
+      }
+  
       const addedPost = await res.json();
       setProfileData((prev) => ({
         ...prev,
-        posts: [addedPost, ...prev.posts], 
+        posts: [addedPost, ...prev.posts],
       }));
       setNewPostContent("");
     } catch (err) {
       alert(err.message);
     }
   };
-
+  
   const handleAddActivity = async (e) => {
     e.preventDefault();
     if (!newActivityComment.trim()) return alert("Comment cannot be empty.");
-
     try {
       const postid = profileData.posts.length > 0 ? profileData.posts[0]._id : "dummyPostId";
-
       const res = await fetch("/activity/createComment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, comment: newActivityComment, postid }),
       });
       if (!res.ok) throw new Error("Failed to add activity");
-
       const addedActivity = await res.json();
       setProfileData((prev) => ({
         ...prev,
-        activities: [addedActivity, ...prev.activities], 
+        activities: [addedActivity, ...prev.activities],
       }));
       setNewActivityComment("");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleDeletePost = async (postid) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      const res = await fetch("/post/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postid }), 
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to delete post");
+      }
+      await res.json();
+      setProfileData((prev) => ({
+        ...prev,
+        posts: prev.posts.filter(post => post.postid !== postid),
+      }));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleDeleteActivity = async (activityId) => {
+    if (!window.confirm("Are you sure you want to delete this activity?")) return;
+    try {
+      const res = await fetch("/activity/deleteComment", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ activityId }),
+      });
+      if (!res.ok) throw new Error("Failed to delete activity");
+      await res.json();
+      setProfileData((prev) => ({
+        ...prev,
+        activities: prev.activities.filter(act => act._id !== activityId),
+      }));
     } catch (err) {
       alert(err.message);
     }
@@ -102,7 +143,6 @@ const Profile = () => {
         <p>Following: {user.following.length}</p>
       </div>
 
-    
       <form onSubmit={handleAddPost} className="add-post-form">
         <input
           type="text"
@@ -127,6 +167,12 @@ const Profile = () => {
               {post.content}
               <br />
               <small>{new Date(post.createdAt).toLocaleString()}</small>
+              <button
+                className="btn btn-sm btn-danger ms-3"
+                onClick={() => handleDeletePost(post.postid)}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
@@ -156,6 +202,12 @@ const Profile = () => {
               {act.comment}
               <br />
               <small>{new Date(act.createdAt || act.date).toLocaleString()}</small>
+              <button
+                className="btn btn-sm btn-danger ms-3"
+                onClick={() => handleDeleteActivity(act._id)}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
